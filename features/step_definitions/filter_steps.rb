@@ -1,5 +1,5 @@
 Given(/^a new bloom filter$/) do
-  pending # express the regexp above with the code you wish you had
+  @filter = BloomFilter.new
 end
 
 Given(/^I add "(.*?)" to the filter$/) do |added_word|
