@@ -14,7 +14,13 @@ class BloomFilter
   end
   
   def in_bloom?(checked_word)
-    'no'
+    hashed_word = Digest::SHA1.hexdigest(checked_word).to_i(16)
+    search_result = @bloom_filter & hashed_word
+    if (search_result == hashed_word)
+      'maybe'
+    else
+      'no'
+    end
   end
   
   def filter_contents
