@@ -7,7 +7,7 @@ Given(/^I add "(.*?)" to the filter$/) do |added_word|
 end
 
 When(/^I check the filter for "(.*?)"$/) do |checked_word|
-  pending # express the regexp above with the code you wish you had
+  @present = @filter.in_bloom?(checked_word)
 end
 
 Then(/^the filter should report it does not exist in my dictoinary$/) do

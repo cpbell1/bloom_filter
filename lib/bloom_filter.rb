@@ -4,4 +4,8 @@ class BloomFilter
     
   end
   
+  def in_bloom?(checked_word)
+    
+  end
+  
 end
