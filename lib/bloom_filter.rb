@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 class BloomFilter
   
   @bloom_filter
@@ -7,7 +9,8 @@ class BloomFilter
   end
   
   def add_single_word(added_word)
-    
+    hashed_word = Digest::SHA1.hexdigest(added_word)
+    @bloom_filter = @bloom_filter | hashed_word.to_i(16)
   end
   
   def in_bloom?(checked_word)
