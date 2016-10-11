@@ -11,7 +11,7 @@ When(/^I check the filter for "(.*?)"$/) do |checked_word|
 end
 
 Then(/^the filter should report it does not exist in my dictoinary$/) do
-  pending # express the regexp above with the code you wish you had
+  expect(@present).to eql('no')
 end
 
 Then(/^the filter should report it might exist in my dictoinary$/) do
