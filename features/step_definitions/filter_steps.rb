@@ -3,7 +3,7 @@ Given(/^a new bloom filter$/) do
 end
 
 Given(/^I add "(.*?)" to the filter$/) do |added_word|
-  pending # express the regexp above with the code you wish you had
+  @filter.add_single_word(added_word)
 end
 
 When(/^I check the filter for "(.*?)"$/) do |checked_word|
