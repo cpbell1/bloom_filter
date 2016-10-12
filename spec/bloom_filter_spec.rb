@@ -46,9 +46,21 @@ describe "Bloom Filter" do
       expect(found_word).to eql('no')
     end
              
-    it "should find a word present in filter" do
+    it "should find first word present in filter" do
       load_three_words
       found_word = my_bloom_filter.in_bloom?("developer")         
+      expect(found_word).to eql('maybe')
+    end
+
+    it "should find second word present in filter" do
+      load_three_words
+      found_word = my_bloom_filter.in_bloom?("programmer")         
+      expect(found_word).to eql('maybe')
+    end
+    
+    it "should find third word present in filter" do
+      load_three_words
+      found_word = my_bloom_filter.in_bloom?("coach")         
       expect(found_word).to eql('maybe')
     end
   end
