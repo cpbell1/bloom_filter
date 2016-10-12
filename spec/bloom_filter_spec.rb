@@ -40,7 +40,7 @@ describe "Bloom Filter" do
   end
   
   describe "checking for words in filter when multiple words loaded" do
-    it "should not find a word present in filter" do
+    it "should not find a word absent from filter" do
       load_three_words
       found_word = my_bloom_filter.in_bloom?("analyst")         
       expect(found_word).to eql('no')
