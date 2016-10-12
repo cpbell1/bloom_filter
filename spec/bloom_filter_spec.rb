@@ -79,6 +79,20 @@ describe "Bloom Filter" do
       expect(found_word).to eql('maybe')
     end  
   end
+  
+  describe "checking for words in filter when small file loaded" do
+    it "should not find a word absent from filter" do
+      my_bloom_filter.load_file("tiny_dictionary.txt")
+      found_word = my_bloom_filter.in_bloom?("analyst")         
+      expect(found_word).to eql('no')
+    end
+             
+    it "should find first word present in filter" do
+      my_bloom_filter.load_file("tiny_dictionary.txt")
+      found_word = my_bloom_filter.in_bloom?("developer")         
+      expect(found_word).to eql('maybe')
+    end
+  end
 end
 
 def load_three_words
