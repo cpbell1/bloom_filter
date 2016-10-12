@@ -25,7 +25,7 @@ describe "Bloom Filter" do
     end    
   end
   
-  describe "checking for words in filter" do
+  describe "checking for words in filter when only one loaded" do
              
     it "should not find a word absent from filter" do
       found_word = my_bloom_filter.in_bloom?("developer")         
@@ -36,7 +36,25 @@ describe "Bloom Filter" do
       my_bloom_filter.add_single_word("developer") 
       found_word = my_bloom_filter.in_bloom?("developer")         
       expect(found_word).to eql('maybe')
-    end  
+    end
+  end
+  
+  describe "checking for words in filter when multiple words loaded" do
+    it "should not find a word present in filter" do
+      my_bloom_filter.add_single_word("developer") 
+      my_bloom_filter.add_single_word("programmer")
+      my_bloom_filter.add_single_word("coach")      
+      found_word = my_bloom_filter.in_bloom?("analyst")         
+      expect(found_word).to eql('no')
+    end
+             
+    it "should find a word present in filter" do
+      my_bloom_filter.add_single_word("developer") 
+      my_bloom_filter.add_single_word("programmer")
+      my_bloom_filter.add_single_word("coach")      
+      found_word = my_bloom_filter.in_bloom?("developer")         
+      expect(found_word).to eql('maybe')
+    end
   end
   
   describe "checking for words in filter" do
