@@ -39,5 +39,19 @@ describe "Bloom Filter" do
     end  
   end
   
+  describe "checking for words in filter" do
+             
+    it "should match upper case word to lower case word in filter" do
+      my_bloom_filter.add_single_word("developer") 
+      found_word = my_bloom_filter.in_bloom?("DEVELOPER")         
+      expect(found_word).to eql('maybe')
+    end  
+             
+    it "should match lower case word to upper case word loaded into filter" do
+      my_bloom_filter.add_single_word("DEVELOPER") 
+      found_word = my_bloom_filter.in_bloom?("developer")         
+      expect(found_word).to eql('maybe')
+    end  
+  end
 
 end

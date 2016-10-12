@@ -9,11 +9,13 @@ class BloomFilter
   end
   
   def add_single_word(added_word)
+    added_word = added_word.downcase
     hashed_word = Digest::SHA1.hexdigest(added_word)
     @bloom_filter = @bloom_filter | hashed_word.to_i(16)
   end
   
   def in_bloom?(checked_word)
+    checked_word = checked_word.downcase
     hashed_word = Digest::SHA1.hexdigest(checked_word).to_i(16)
     search_result = @bloom_filter & hashed_word
     if (search_result == hashed_word)
