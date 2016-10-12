@@ -6,6 +6,10 @@ Given(/^I add "(.*?)" to the filter$/) do |added_word|
   @filter.add_single_word(added_word)
 end
 
+Given(/^a fully loaded bloom filter$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
 When(/^I check the filter for "(.*?)"$/) do |checked_word|
   @present = @filter.in_bloom?(checked_word)
 end
