@@ -3,26 +3,20 @@ require 'spec_helper'
 describe "Bloom Filter" do
   
   let(:my_bloom_filter)   {BloomFilter.new}
-  let(:developer_hash)    {352100620296343613541066344608341732476524205303}
 
   describe "initializing filter" do
           
-    it "should have an empty filter of all zeros" do
-      expect(my_bloom_filter.filter_contents).to eql(0)
+    it "should have an empty filter of all false" do
+      expect(my_bloom_filter.empty?).to be true
     end
   end
   
   describe "adding words to filter" do
              
-    it "should not be zero after adding a word to the filter" do
+    it "should not be all false after adding a word to the filter" do
       my_bloom_filter.add_single_word("developer")          
-      expect(my_bloom_filter.filter_contents).not_to eql(0)
+      expect(my_bloom_filter.empty?).to be false
     end
-    
-    it "should be equal to the input word hash after adding only that word to the filter" do
-      my_bloom_filter.add_single_word("developer")          
-      expect(my_bloom_filter.filter_contents).to eql(developer_hash)
-    end    
   end
   
   describe "checking for words in filter when only one loaded" do

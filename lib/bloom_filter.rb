@@ -1,17 +1,23 @@
-require 'digest/sha1'
+require 'digest/sha2'
 
 class BloomFilter
   
   @bloom_filter
+  @filter_size
   
   def initialize
-    @bloom_filter = 0
+    @filter_size = 512
+    @bloom_filter = Array.new(@filter_size)
+    @bloom_filter.each do |index|
+      index = false
+    end
   end
   
   def add_single_word(added_word)
     added_word = added_word.downcase
-    hashed_word = Digest::SHA1.hexdigest(added_word)
-    @bloom_filter = @bloom_filter | hashed_word.to_i(16)
+    hashed_word = Digest::SHA512.hexdigest(added_word)
+    bloom_index = hashed_word.to_i(16) % @filter_size
+    @bloom_filter[bloom_index] = true
   end
   
   def load_file(loaded_file)
@@ -23,17 +29,24 @@ class BloomFilter
   
   def in_bloom?(checked_word)
     checked_word = checked_word.downcase
-    hashed_word = Digest::SHA1.hexdigest(checked_word).to_i(16)
-    search_result = @bloom_filter & hashed_word
-    if (search_result == hashed_word)
+    hashed_word = Digest::SHA512.hexdigest(checked_word)
+    bloom_index = hashed_word.to_i(16) % @filter_size
+    if (@bloom_filter[bloom_index] == true)
       'maybe'
     else
       'no'
     end
   end
   
-  def filter_contents
-    @bloom_filter
+  def empty?
+    is_empty = true
+    @bloom_filter.each do |index|
+      if (index == true)
+        is_empty = false
+        break
+      end
+    end
+    is_empty
   end
   
 end
