@@ -7,7 +7,8 @@ Given(/^I add "(.*?)" to the filter$/) do |added_word|
 end
 
 Given(/^a fully loaded bloom filter$/) do
-  pending # express the regexp above with the code you wish you had
+  @filter = BloomFilter.new(1000000)
+  @filter.load_file("usa.txt")
 end
 
 When(/^I check the filter for "(.*?)"$/) do |checked_word|

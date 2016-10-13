@@ -101,6 +101,23 @@ describe "Bloom Filter" do
       expect(found_word).to eql('maybe')
     end
   end
+  
+  describe "checking for words in filter when 10s of thousands of words loaded" do
+    it "should not find a word absent from filter" do
+      large_bloom_filter = BloomFilter.new(1000000)
+      large_bloom_filter.load_file("33872_word_dictionary.txt")
+      found_word = large_bloom_filter.in_bloom?("zzzzzzzzzzzzzzzz")
+      expect(found_word).to eql('no')
+    end
+             
+    it "should find known word present in filter" do
+      large_bloom_filter = BloomFilter.new(1000000)
+      large_bloom_filter.load_file("33872_word_dictionary.txt")
+      found_word = large_bloom_filter.in_bloom?("rabbit")         
+      expect(found_word).to eql('maybe')
+    end
+  end
+
 end
 
 def load_three_words

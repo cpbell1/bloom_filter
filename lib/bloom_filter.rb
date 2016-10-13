@@ -5,8 +5,8 @@ class BloomFilter
   @bloom_filter
   @filter_size
   
-  def initialize
-    @filter_size = 512
+  def initialize(filter_size=512)
+    @filter_size = filter_size
     @bloom_filter = Array.new(@filter_size)
     @bloom_filter.each do |index|
       index = false
