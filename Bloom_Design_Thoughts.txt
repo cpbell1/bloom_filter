@@ -1,0 +1,132 @@
+The source code is in Ruby ruby 2.1.0p0 , BDD code is in Cucumber 1.3.17 and TDD is in Rspec 3.3.0
+
+Git version 2.3.2 (Apple Git-55)
+
+Platform is a Mac OS 10.10.5 (Yosemite)
+
+
+Thought I'd start with TDD, but found my thinking geting into implmentation too soon. So I decided to start with BDD and then later drop down into TDD.
+
+With a higher level thinking, I saw that there were three things I could definitively say about a bloom filter that would make good starting test BDD cases.
+
+1. A bloom filter that hasn't been loaded with anything should always return a no, when asked if the filter knows about any word.
+
+2. A bloom filter with only one word loaded into it will always return a maybe if asked about that word.
+
+3. A bloom filter with only one word loaded into it will always return a no if asked about any other word.
+
+So that creates a starting place.
+
+Not sure how I'm going to predict for testing purposes, whether to expect a no or a maybe, when the set gets large for a word that isn't in the set, but I deal with that later (if I need to).
+
+Created three senarios in Cucumber for the above situations and committed everything when in the pending state. Checked in.
+
+Then I implemented the Given step, which implied that a bloom filter should exist. It didn't of course so that step went Red and failed.
+
+Following "do the simplest thing" approach, I created the barest bloom filter class, which got that step to Green and pass. This much is passing, so time for a checkin.
+
+Next I think I'm going to implement the And pending step that adds a word, because it gets me closer to needing to implement real code.
+
+Implelemented the pending Add step. Step went Red as expected. Adding a do nothing add_word method to get the step to pass and go Green. Check in time again.
+
+Implemented the pending When step, which went Red. Adding a do nothing in_bloom? method to get the step to pass and go Green. Check in time again.
+
+Implemented the first (not in filter) Then step, which went Red, because in_bloom? returned nil, since the method was empty. Hard coded a return for in_bloom? to make it go Green and pass. Checked in again.
+
+Noticed miss spelling in Then step. Corrected feature and step. Checked in again. 
+
+Thought about refactoring the Given step in the Feature into a Background. Decided against it, because it is more important for BDD Features to be clearly readable than to be DRY. If the step up had been excessively long as to detract from the main process of the steps then I probably would have decided differently. In unit tests I would have decided differently.
+
+On to the last Then step. This should push real functionality, because in_bloom? won't have a way to determine to return a 'no' or a 'maybe' without true functionality.
+
+Implemented the second (not in filter) Then step, which went Red, because in_bloom? returned 'no', since the method was hardcoded.
+
+Now I have to implment some real functionality. Dropping down into unit tests. I think I want a test on the constuctor (using Ruby default previously) that ensures it can hold 64 zeros somehow, because I think I'm going to use one of the Ruby hash methods on the input words and then OR them into the filter. Then I think I'm going to check against the hash of a checked word against an AND. This is getting into the guts of the implementation, but I have fleshed out most of the trival YAGNI 'simplest thing that could possibly work' parts with the prior BDD steps.
+
+I considered using an array of 64 zeros, but that seemed more complicated than it needs to be. There could be a temporary issue with running my code on a 32 bit Ruby implementation (my Mac is 64 bits), but that should sort itself out the first time I AND a hash (Ruby hashes are 64 bits), which will convert the filter to 64 bits, if it isn't already.
+
+Created first Rspec unit test, which ran as expected Red because Filter return method didn't exist. Added filter_contents method (which may not have much purpose other then testing. Also added attribute to hold the bloom filter and initialized it in the constructor. With that the first test passed. Time to check in unit tests and code.
+
+I'm also going to wait to check in the changes to the last Then step, until I have it passing.
+
+Some good TDD test cases ???
+
+Created two unit tests in Rspec to check that when a word is added to the filter, first that its no longer zero an second that contents of the filter are its hash. Test went Red as expected, because the filter hadn't changed from its zero intialization due to the fact the add_single_word method still did nothing.
+
+Started working on implementing add_word method and my expected solution wasn't working. Dropped down into IRB to interactively find out what was happening and discovered, after a couple of seperate IRB sessions that Ruby's string hash function only creates consistent results for a single run of IRB. So there is no way using that function to create a repeatable test with a known expected result. May need to use the SHA1 hash or something else instead of String.hash.
+
+SHA1 creates a conistent hash across IRB runs. SHA1's size is 160 bits which should be enough. SHA1 security issues don't matter for the purpose of Bloom Filters. If SHA1 isn't big enough, when I test loading a lot of words, I'll switch to SHA2, which comes in 256, 384 or 512 bit lengths.
+
+SHA1 implementation worked. Tests went Green, so I checked in the unit tests and code.
+
+But still not correctly determining 'maybe' and 'no', so the BDD cukes aren't passing.
+
+On to making those pass by first creating two more unit tests to check the simplest no and maybe cases. These tests have a little overlap with the BDD Cucumber tests, but since the TDD Rspec unit tests would be run a lot more frequently than the cukes, it seemed worthwhile. Also I expect these tests to serve as a template for unit tests that won't be in the cukes. One unit test was Red as expected, the other Green, because of the default 'no'.
+
+As expected ORing the checked_word hash with the bloom filter produced the desired result and all unit tests ran Green. All the BDD Cucumber scenarios are also now passing. Checking everything in.
+
+The filter should be able to handle upper case or lower case input. Create two test cases for that, which failed as expected. Modified filter methods to make first one test pass then both. Checked in.
+
+Need to make sure this works with multiple inputs. Should I create TDD tests or BDD tests for that? Think I'll create some unit tests. Added tests which passed, so filter strategy seems to work. Will need to check later with large dictionary to see how often I get false positives and if a SHA2 is needed instead.
+
+Committed tests, but wrote wrong commit message. After commit, modified message to reflect correct reason for commit (testing a filter with multiple words).
+
+Refactored tests to keep DRY, better wording. Committed.
+
+Need to check that hash approach doesn't just match the first word. Wrote two more tests, which passed and committed.
+
+Now on a real bloom filter with a major dictionary loaded. That is significant new funtionality that will require reading a large file, so I think its time to go back up to the Cucumber BDDs to drive more unit tests and more code changes. So those BDD tests are:
+
+4. A fully loaded bloom filter will always return a maybe if asked about a loaded word.
+
+5. A fully loaded bloom filter will always return a no if asked about a word not similar to any loaded word.
+
+The last BDD test will be very data dependent, because of the possibility of false positives. Putting a lot of special characters in the test data should prevent that.
+
+Created BDD cukes and pending steps and checked in. Fleshed out step to load a large file, which failed as expected.
+
+Going to need to create some unit tests and code for file loading. Will also need files. Created a large file from the data from Dave Thomas' data associated with the kata. Then created a tiny file of the three words used in the unit tests. I expect that the load_file method should use the add word method internally. Since loading will probably take a while I'll run the unit tests against the small file and behavior tests against the large file. At least that's the plan at this time.
+
+Checked in data files.
+
+Wrote some unit tests file loading a tiny file and checking for words. Tests failed as expected. Then got tests passing and checked in unit tests and code.
+
+Ran cukes and found problem with limiting false positives for large file loads. Changed cucumber test word to "$%*(){}[]-:?%@!^<>" and it still finds it. Might be time for SHA2.
+
+Tried several SHA2 variations. All failed to handle the constant false positive problem.
+
+Relooked at the Bloom Filter concept again. I've been going down a rat hole. A pairing partner would have probably pointed that out to me way eariler. First off the hash isn't supposed to go into the filter, the hash is supposed to be an index. The Bloom Filter is only supposed to have a single bit se at that index. Also the array must be bigger than the number of words added to the filter.
+
+OK looking at where I am, all of the Cucumber BDD tests should be OK. The TDD unit tests will need some modification. Specifically the "initializing filter" and "adding words" Specs have to be changed because they are dependent on the structure of the filter and how I'm adding words to it. That dependency was OK at the time, because it substitued for IRB or debugger sessions to see what was going on, when I was experimenting.
+
+The "checking for words" and "case insensitivity" tests should also be OK as far as they go, but I'm going to need to add some tests for different sized bloom filters against differt sized dictionaries.
+
+So new design decisions:
+
+o Filter will be a real array, maybe of booleans or maybe just numbers that can either be 1 or zero. Think the Booleans may be a better idea, because it makes the intent clearer.
+
+o The size of the array should be an input value on initialization, although it may have a default.
+
+o Need to either make an index out of one of Ruby's existing hash functions or create create one from scratch.
+
+Created new test against a 305 Australian grammer school word list. 
+
+Implemented filter with an array of 512 booleans and used a 512 modulo on the SHA512 hash as an index. This works better at least sometimes it recognized that a word in the filter. 
+
+Better, but this approach might not scale. Since it is a working improvement against the existing unit tests, checking it in.
+
+Next thing I need to do is to make the bloom filter array a size that can be set by a parameter rather than a fixed size. That should handle larger word lists.
+
+Wrote tests and code to set filter size. Unit tested against a word list of 30,000 plus words and ran cucumber acceptance tests against a USA word list of 60,000 plus words. All tests passed. Checked code in. I ended up not using Dave Thomas' word list, but instead used the USA list, which was longer.
+
+I was concerned that Ruby might be too slow to use for Bloom Filters and I might need to switch to Java or something. Ruby seems to be OK. Loading the filter from a large word list take a short but noticable time, but checking against a loaded one does not. Since in usage loading would only happen once, when the app using the Bloom Filter started up, Ruby seems to be OK. My assessment of acceptable time is not in a test, but from manually running the tests, which I think for this purpose is OK.
+
+Were I to write an automated timing test, I used Ruby's benchmark feature to determine timing.
+
+I also didn't test the percentage of false positives, I instead tested to make sure that everything didn't show up as a false positive. Automated testing for false positive percentage could be done, but I'm not a good enough statistician to to determine how to create the right sample set to test against. I think such tests would take a really long to run, but I might be wrong, because I'm assuming I'd need tens of thousands of misspelled words in my test data set.
+
+If I found that false positive percentage to be too high, then I'd experiment with increasing the filter size (and maybe add something to check the input word list length, before loading to automatically set filter size). I'd also consider changing to another hash and indexing algorthim.
+
+Finally were I creating this general use, more than Dave and myself, I would have created any RDocs for the Bloom Filter, which I haven't.
+
+For now I'm sticking a fork in it and calling it done.
